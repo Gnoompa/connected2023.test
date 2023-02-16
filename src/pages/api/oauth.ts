@@ -1,14 +1,14 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
   runtime: "edge",
 };
 
-export default async (req: NextRequest) => {
+export default (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
 
-  const response = await fetch(
+  const response = fetch(
     `https://api.twitter.com/2/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:3001/redirect&code_verifier=challenge`,
     {
       headers: {
@@ -18,7 +18,7 @@ export default async (req: NextRequest) => {
       },
       method: "POST",
     }
-  );
-
-  return response;
+  )
+    .then((res) => res.json())
+    .then(NextResponse.json);
 };
