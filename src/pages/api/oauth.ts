@@ -18,7 +18,7 @@ export default async function handler(req: NextRequest) {
       },
       method: "POST",
     }
-  ).catch((e) => NextResponse.error());
+  ).catch((e) => NextResponse.json({"error": code}));
 
-  return NextResponse.json(response.json());
+  return NextResponse.json({code});
 }
