@@ -10,19 +10,24 @@ export default async function handler(req: NextRequest) {
 
   var res;
 
-  const response = await fetch(
-    `https://api.twitter.com/2/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:3001/redirect&code_verifier=challenge`,
-    {
-      headers: {
-        Authorization:
-          "Basic TmxsaVdXUXdlbnBvVFVoVlh6aHpYMEZuTUVzNk1UcGphUTpvaTA1VnVZeWVwa3dvQmZoVlJSeGpVQkp2dDRrQUM2SWprX1czOGs5VWtRVXlmVll5TQ==",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      method: "POST",
-    }
-  );
+  try {
+    const response = await fetch(
+      `https://api.twitter.com/2/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:3001/redirect&code_verifier=challenge`,
+      {
+        headers: {
+          Authorization:
+            "Basic TmxsaVdXUXdlbnBvVFVoVlh6aHpYMEZuTUVzNk1UcGphUTpvaTA1VnVZeWVwa3dvQmZoVlJSeGpVQkp2dDRrQUM2SWprX1czOGs5VWtRVXlmVll5TQ==",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      }
+    );
 
-  console.log(await response.json())
+    res = NextResponse.json(await response.json());
+  } catch (e) {
+    console.log(e);
+    res = NextResponse.json({ error: e });
+  }
 
-  return res || NextResponse.json({ code, ...(await response.json()) });
+  return res;
 }
