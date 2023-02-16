@@ -8,7 +8,7 @@ export default async function handler(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
 
-  let res;
+  var res;
 
   const response = await fetch(
     `https://api.twitter.com/2/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:3001/redirect&code_verifier=challenge`,
@@ -20,7 +20,9 @@ export default async function handler(req: NextRequest) {
       },
       method: "POST",
     }
-  ).catch((e) => (res = NextResponse.json({ error: code })));
+  ).catch((e) => (console.log(e), res = NextResponse.json({ error: code })));
+
+  console.log(response)
 
   return res || NextResponse.json({ code, response });
 }
