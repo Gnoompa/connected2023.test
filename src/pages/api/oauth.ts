@@ -20,7 +20,7 @@ export default async function handler(req: NextRequest) {
       },
       method: "POST",
     }
-  ).catch((e) => (console.log(e), res = NextResponse.json({ error: code })));
+  );
 
   console.log(response.json())
 
