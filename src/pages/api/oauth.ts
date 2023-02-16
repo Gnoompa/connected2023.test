@@ -5,8 +5,9 @@ export const config = {
 };
 
 export default (req: NextRequest) => {
-    
+    const {id} = req.query
+
   return NextResponse.json({
-    name: req.body,
+    name: id,
   });
 };
