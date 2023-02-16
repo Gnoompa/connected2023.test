@@ -8,7 +8,7 @@ export default async function handler(
 
   try {
     const response = await fetch(
-      `https://api.twitter.com/2/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:3001/redirect&code_verifier=challenge`,
+      `https://api.twitter.com/2/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=https://verceltwitter-gnoompa.vercel.app/redirect&code_verifier=challenge`,
       {
         headers: {
           Authorization:
