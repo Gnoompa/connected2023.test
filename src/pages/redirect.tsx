@@ -7,16 +7,26 @@ const Redirect: NextPage = () => {
   }, []);
 
   const setupTwitter = async () => {
-    const authCode = new URLSearchParams(global.location.href).get("code");
+    let token = global.localStorage.getItem("twitter_access");
 
-    const res = await fetch(
-      "https://verceltwitter-gnoompa.vercel.app/api/oauth?code=" +
-        authCode
-    )
+    if (!token) {
+      const authCode = new URLSearchParams(global.location.href).get("code");
 
-    console.log(await res.json());
+      const res = await fetch(
+        "https://verceltwitter-gnoompa.vercel.app/api/oauth?code=" + authCode
+      );
 
-    // global.localStorage.setItem("test_twitter", "Um1nczJqanc3VkNnQmJwWUVZM0FNMzBxbXliTE1admduUDducXk0NDNpU2hVOjE2NzY0NDM5NTEzMjY6MTowOmF0OjE");
+      const resp = await res.json();
+
+      token = resp.access_token;
+      global.localStorage.setItem("twitter_access", resp.access_token);
+    }
+
+    fetch("https://api.twitter.com/2/users/me", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
   };
 
   return <div className="container">redirected</div>;
