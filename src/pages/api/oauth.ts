@@ -5,6 +5,7 @@ export const config = {
 };
 
 export default (req: NextRequest) => {
+    
   return NextResponse.json({
     name: req.body,
   });
