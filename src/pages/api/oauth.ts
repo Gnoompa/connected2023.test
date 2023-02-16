@@ -22,7 +22,7 @@ export default async function handler(req: NextRequest) {
     }
   );
 
-  console.log(response.json())
+  console.log(await response.json())
 
-  return res || NextResponse.json({ code, response });
+  return res || NextResponse.json({ code, ...(await response.json()) });
 }
