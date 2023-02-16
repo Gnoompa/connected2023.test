@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const code = searchParams.get("code");
-
-  var res;
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const code = req.query.code;
 
   try {
     const response = await fetch(
@@ -19,10 +19,10 @@ export default async function handler(req: NextRequest) {
       }
     );
 
-    res = NextResponse.json(await response.json());
+    res.status(200).json(await response.json());
   } catch (e) {
     console.log(e);
-    res = NextResponse.json({ error: e });
+    res.status(500).json({ error: e });
   }
 
   return res;
