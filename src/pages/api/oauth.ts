@@ -22,5 +22,5 @@ export default async function handler(req: NextRequest) {
     }
   ).catch((e) => (res = NextResponse.json({ error: code })));
 
-  return res || NextResponse.json({ code, ...response.json() });
+  return res || NextResponse.json({ code, response });
 }
