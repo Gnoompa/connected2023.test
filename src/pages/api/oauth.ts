@@ -22,7 +22,7 @@ export default async function handler(req: NextRequest) {
     }
   ).catch((e) => (console.log(e), res = NextResponse.json({ error: code })));
 
-  console.log(response)
+  console.log(response.json())
 
   return res || NextResponse.json({ code, response });
 }
