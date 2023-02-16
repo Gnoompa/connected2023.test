@@ -20,5 +20,5 @@ export default (req: NextRequest) => {
     }
   )
     .then((res) => res.json())
-    .then(NextResponse.json);
+    .catch((e) => NextResponse.error());
 };
