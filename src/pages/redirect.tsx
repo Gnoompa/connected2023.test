@@ -10,7 +10,7 @@ const Redirect: NextPage = () => {
     const authCode = new URLSearchParams(global.location.href).get("code");
 
     const res = await fetch(
-      "verceltwitter-gnoompa.vercel.app/api/oauth?code=" +
+      "https://verceltwitter-gnoompa.vercel.app/api/oauth?code=" +
         authCode
     )
 
