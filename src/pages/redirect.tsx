@@ -3,7 +3,8 @@ import { useEffect } from "react";
 
 const Redirect: NextPage = () => {
   useEffect(() => {
-    setupTwitter();
+    global.close();
+    // setupTwitter();
   }, []);
 
   const setupTwitter = async () => {
