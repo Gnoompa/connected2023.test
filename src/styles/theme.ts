@@ -1,6 +1,10 @@
 import { extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({
+  config: {
+    initialColorMode: "dark",
+    useSystemColorMode: false,
+  },
   colors: {
     cyberconnectBg: "linear-gradient(93deg, #FFFFFF 2.53%, #DEDEDE 100%)",
     cyberconnectColor: "#111",

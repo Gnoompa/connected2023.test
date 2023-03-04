@@ -1,4 +1,6 @@
-import { Button, Flex, Link } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Flex, Link } from "@chakra-ui/react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export const Nav = () => (
   <Flex
@@ -8,14 +10,14 @@ export const Nav = () => (
     sx={{ gap: "3rem" }}
     p={"1rem 2rem"}
   >
-    <Link
+    {/* <Link
       sx={{ textDecoration: "underline" }}
       fontWeight={"light"}
       href="/about"
       target="_blank"
     >
       🎉 NFT campaign
-    </Link>
+    </Link> */}
     <Link
       sx={{ textDecoration: "underline" }}
       fontWeight={"light"}
@@ -23,8 +25,9 @@ export const Nav = () => (
       target="_blank"
     >
       about
+      <ExternalLinkIcon ml=".5rem"/>
     </Link>
-    <Button>connect wallet</Button>
+    <ConnectButton />
   </Flex>
 );
 

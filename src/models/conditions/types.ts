@@ -9,6 +9,10 @@ export interface ICondition {
   type: CONDITION_TYPE;
   label: string;
   conditions: {
+    id: string;
+    conditionCode: (
+      selectedOptions: { isActive?: boolean; label: string; value: any }[]
+    ) => string;
     htmlElement: (
       selectedOptions: { isActive?: boolean; label: string; value: any }[]
     ) => JSX.Element;

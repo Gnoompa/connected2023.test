@@ -2,6 +2,7 @@ import {
   ArrowUpDownIcon,
   ChevronRightIcon,
   CloseIcon,
+  PlusSquareIcon,
   Search2Icon
 } from "@chakra-ui/icons";
 import {
@@ -139,7 +140,12 @@ export const ConditionConstructor = ({
     <Flex gap={"1rem"}>
       {
         <Menu closeOnSelect={false}>
-          <MenuButton as={Button}>Add conditions</MenuButton>
+          <MenuButton as={Button}>
+            <Flex gap=".5rem" align={"center"}>
+              <PlusSquareIcon />
+              <Text>Add</Text>
+            </Flex>
+          </MenuButton>
           <Portal>
             <MenuList gap={"0rem"}>
               {conditionConfigs.map((conditionConfig, conditionConfigIndex) => (

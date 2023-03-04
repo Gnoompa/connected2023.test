@@ -1,4 +1,3 @@
-import { Flex, Image } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import { CONDITION_TYPE } from "../conditions/types";
 
@@ -23,26 +22,20 @@ export const useConditions = () => {
       label: "Guild.xyz",
       conditions: [
         {
+          id: "hasProfile",
           label: "Guild member",
           subtitle: "(off-chain)",
-          conditionIpfs: "",
           multiple: true,
           options: conditionGuildOptions,
-          htmlElement: (selectedOptions) => (
-            <Flex
-              bg={`guildBg`}
-              color={`guildColor`}
-              fontWeight={"semibold"}
-              p=".75rem 1.25rem"
-              borderRadius={"md"}
-            >
-              <Flex gap="1rem">
-                <Image src={`/guild.svg`} w="1.25rem" />
-                Member of{" "}
-                {selectedOptions?.map(({ label }) => label).join(", ")}
-              </Flex>
-            </Flex>
-          ),
+          conditionCode: (options) => `
+            const guilds = await (await fetch("https://api.guild.xyz/v1/user/membership/" + ethers.utils.verifyMessage(authSig.signedMessage, authSig.sig))).json()
+
+            if (guilds && guilds.length && ${JSON.stringify(
+              options
+            )}.map(option => !!guilds.filter(({guildId}) => guildId == option.value).length).includes(false)) { return LitActions.setResponse({response: "Guild.xyz membership is not satisfied"}) }
+          `,
+          getLabel: (options) =>
+            `Member of ${options?.map(({ label }) => label).join(", ")}`,
         },
       ],
     }),
