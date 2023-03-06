@@ -1,15 +1,27 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Image, Spinner, Text } from "@chakra-ui/react";
+import { ArrowForwardIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  Flex,
+  Image,
+  Spinner,
+  Text
+} from "@chakra-ui/react";
 import { ethers } from "ethers";
 import LitJsSdk from "lit-js-sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link } from "rebass";
 import { CREATE_COLLECT_ESSENCE_TYPED_DATA } from "src/api/cyberConnect/graphql/CreateCollectEssenceTypedData";
 
 import { EVENT_PROFILE_BY_HANDLE } from "src/api/cyberConnect/graphql/EventProfileByHandle";
 import { RELAY } from "src/api/cyberConnect/graphql/Relay";
 import { RELAY_ACTION_STATUS } from "src/api/cyberConnect/graphql/RelayActionStatus";
+import { DEFAULT_CHAIN, IS_TEST_ENV } from "src/consts";
+import { TypedDataUtils } from "src/lib/utils/typedData";
 import useLogin from "src/models/cyberConnect/login";
 import { useAccount, useContractRead, useSigner } from "wagmi";
 import ABI from "../../models/cyberConnect/abi";
@@ -39,6 +51,13 @@ export const EventPage = () => {
   const [relay] = useMutation(RELAY);
   const [queryRelayStatus] = useLazyQuery(RELAY_ACTION_STATUS);
 
+  const profileEssence =
+    eventProfile?.profileByHandle?.essences?.edges?.[0]?.node;
+
+  const openseaLink = IS_TEST_ENV
+    ? `https://testnets.opensea.io/assets/bsc-testnet/${profileEssence?.contractAddress}`
+    : `https://opensea.io/assets/bsc/${profileEssence?.contractAddress}`;
+
   const { data: PKPNFTnonce, refetch: refetchPKPNFTnonce } = useContractRead({
     address: "0x57e12b7a5f38a7f9c23ebd0400e6e53f2a45f271",
     abi: ABI,
@@ -46,11 +65,15 @@ export const EventPage = () => {
     args: ["0x29C25240C364bD9cae5F5FE30EF8591971cE09Ec"],
   });
 
+  console.log(profileEssence)
+
   useEffect(() => {
     eventProfileHandle && fetchEventProfile(eventProfileHandle as string);
   }, [eventProfileHandle]);
 
-  useEffect(() => {}, [isSuccess]);
+  useEffect(() => {
+    isSuccess && setTimeout(() => setIsSuccess(false), 7000);
+  }, [isSuccess]);
 
   useEffect(() => {
     eventGatingToken &&
@@ -87,231 +110,6 @@ export const EventPage = () => {
 
   const participate = async () => {
     try {
-      const TypedDataUtils = {
-        encodeDigest(typedData) {
-          const eip191Header = ethers.utils.arrayify("0x1901");
-          const domainHash = TypedDataUtils.hashStruct(
-            typedData,
-            "EIP712Domain",
-            typedData.domain
-          );
-          const messageHash = TypedDataUtils.hashStruct(
-            typedData,
-            typedData.primaryType,
-            typedData.message
-          );
-
-          const pack = ethers.utils.solidityPack(
-            ["bytes", "bytes32", "bytes32"],
-            [eip191Header, zeroPad(domainHash, 32), zeroPad(messageHash, 32)]
-          );
-
-          const hashPack = ethers.utils.keccak256(pack);
-          return ethers.utils.arrayify(hashPack);
-        },
-
-        encodeData(typedData, primaryType, data) {
-          const types = typedData.types;
-          const args = types[primaryType];
-          if (!args || args.length === 0) {
-            throw new Error("TypedDataUtils: type is not unknown");
-          }
-
-          const abiCoder = new ethers.utils.AbiCoder();
-          const abiTypes = [];
-          const abiValues = [];
-
-          const typeHash = TypedDataUtils.typeHash(
-            typedData.types,
-            primaryType
-          );
-          abiTypes.push("bytes32");
-          abiValues.push(zeroPad(typeHash, 32));
-
-          const encodeField = (name, type, value) => {
-            if (types[type] !== undefined) {
-              return [
-                "bytes32",
-                ethers.utils.arrayify(
-                  ethers.utils.keccak256(
-                    TypedDataUtils.encodeData(typedData, type, value)
-                  )
-                ),
-              ];
-            }
-
-            if (type === "bytes" || type === "string") {
-              let v;
-              if (type === "string") {
-                v = ethers.utils.toUtf8Bytes(value);
-              } else {
-                v = ethers.utils.arrayify(value);
-              }
-              return [
-                "bytes32",
-                ethers.utils.arrayify(
-                  ethers.utils.hexZeroPad(ethers.utils.keccak256(v), 32)
-                ),
-              ];
-            } else if (type.lastIndexOf("[") > 0) {
-              const t = type.slice(0, type.lastIndexOf("["));
-              const v = value.map((item) => encodeField(name, t, item));
-              return [
-                "bytes32",
-                ethers.utils.arrayify(
-                  ethers.utils.keccak256(
-                    ethers.utils.arrayify(
-                      abiCoder.encode(
-                        v.map(([tt]) => tt),
-                        v.map(([, vv]) => vv)
-                      )
-                    )
-                  )
-                ),
-              ];
-            } else {
-              return [type, value];
-            }
-          };
-
-          for (const field of args) {
-            const [type, value] = encodeField(
-              field.name,
-              field.type,
-              data[field.name]
-            );
-            abiTypes.push(type);
-            abiValues.push(value);
-          }
-
-          return ethers.utils.arrayify(abiCoder.encode(abiTypes, abiValues));
-        },
-
-        hashStruct(typedData, primaryType, data) {
-          return ethers.utils.arrayify(
-            ethers.utils.keccak256(
-              TypedDataUtils.encodeData(typedData, primaryType, data)
-            )
-          );
-        },
-
-        typeHash(typedDataTypes, primaryType) {
-          return ethers.utils.arrayify(
-            ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes(
-                TypedDataUtils.encodeType(typedDataTypes, primaryType)
-              )
-            )
-          );
-        },
-
-        encodeType(typedDataTypes, primaryType) {
-          const args = typedDataTypes[primaryType];
-          if (!args || args.length === 0) {
-            throw new Error("TypedDataUtils: type is not defined");
-          }
-
-          const subTypes = [];
-          let s = primaryType + "(";
-
-          for (let i = 0; i < args.length; i++) {
-            const arg = args[i];
-            const arrayArg = arg.type.indexOf("[");
-            const argType =
-              arrayArg < 0 ? arg.type : arg.type.slice(0, arrayArg);
-
-            if (typedDataTypes[argType] && typedDataTypes[argType].length > 0) {
-              let set = false;
-              for (let x = 0; x < subTypes.length; x++) {
-                if (subTypes[x] === argType) {
-                  set = true;
-                }
-              }
-              if (!set) {
-                subTypes.push(argType);
-              }
-            }
-
-            s += arg.type + " " + arg.name;
-            if (i < args.length - 1) {
-              s += ",";
-            }
-          }
-          s += ")";
-
-          subTypes.sort();
-          for (let i = 0; i < subTypes.length; i++) {
-            const subEncodeType = TypedDataUtils.encodeType(
-              typedDataTypes,
-              subTypes[i]
-            );
-            s += subEncodeType;
-          }
-
-          return s;
-        },
-
-        domainType(domain) {
-          const type = [];
-          if (domain.name) {
-            type.push({ name: "name", type: "string" });
-          }
-          if (domain.version) {
-            type.push({ name: "version", type: "string" });
-          }
-          if (domain.chainId) {
-            type.push({ name: "chainId", type: "uint256" });
-          }
-          if (domain.verifyingContract) {
-            type.push({ name: "verifyingContract", type: "address" });
-          }
-          if (domain.salt) {
-            type.push({ name: "salt", type: "bytes32" });
-          }
-          return type;
-        },
-
-        buildTypedData(domain, messageTypes, primaryType, message) {
-          const domainType = TypedDataUtils.domainType(domain);
-
-          const typedData = {
-            domain: domain,
-            types: {
-              EIP712Domain: domainType,
-              ...messageTypes,
-            },
-            primaryType: primaryType,
-            message: message,
-          };
-
-          return typedData;
-        },
-      };
-
-      const encodeTypedDataDigest = (typedData) => {
-        return TypedDataUtils.encodeDigest(typedData);
-      };
-
-      const buildTypedData = (domain, messageTypes, primaryType, message) => {
-        return TypedDataUtils.buildTypedData(
-          domain,
-          messageTypes,
-          primaryType,
-          message
-        );
-      };
-
-      const domainType = (domain) => {
-        return TypedDataUtils.domainType(domain);
-      };
-
-      // zeroPad is implemented as a compat layer between ethers v4 and ethers v5
-      const zeroPad = (value, length) => {
-        return ethers.utils.arrayify(
-          ethers.utils.hexZeroPad(ethers.utils.hexlify(value), length)
-        );
-      };
-
       setIsProcessing(true);
 
       const collectEssenceData = await createEssenceTypedData({
@@ -377,20 +175,24 @@ export const EventPage = () => {
         },
         primaryType: "mint",
         domain: {
-          name: "Link3",
+          name: "CollectPermissionMw",
           version: "1",
-          chainId: "0x61",
-          verifyingContract: "0x57e12b7a5F38A7F9c23eBD0400e6E53F2a45F271",
+          chainId: DEFAULT_CHAIN.id,
+          verifyingContract: IS_TEST_ENV
+            ? "0xbbbab0257edba5823ddb5aa62c08f07bd0d302d9"
+            : "0x01fafdbfbb1a56d4a58bb1f7472fb866922ff6c4",
         },
         message: {
           to: connectedWalletAddress,
           essenceId:
             eventProfile?.profileByHandle?.essences?.edges[0].node.essenceID,
           profileId: eventProfile.profileByHandle.profileID,
-          nonce: typedData.message.nonce,
+          nonce: 0,
           deadline: typedData.message.deadline,
         },
       };
+
+      console.log(permissionMwPreData);
 
       const { data: nonce } = await refetchPKPNFTnonce();
 
@@ -417,7 +219,7 @@ export const EventPage = () => {
       // return 1;
 
       const authSig = await LitJsSdk.checkAndSignAuthMessage({
-        chain: "bscTestnet",
+        chain: IS_TEST_ENV ? "bscTestnet" : "bsc",
       });
 
       // const sig = await signMessageAsync({ message: messageToSign });
@@ -458,6 +260,34 @@ export const EventPage = () => {
         },
       });
 
+      if (!signatures.signatures.sig1?.signature) {
+        throw new Error(signatures.response);
+      }
+
+      const splitSig = ethers.utils.splitSignature(
+        signatures.signatures.sig1.signature
+      );
+
+      console.log(
+        "NEW SIG",
+        ethers.utils.defaultAbiCoder.encode(
+          ["uint8", "bytes32", "bytes32", "uint256"],
+          [splitSig.v, splitSig.r, splitSig.s, typedData.message.deadline]
+        )
+      );
+
+      // return 1;
+
+      console.log(
+        signatures.signatures.sig1.signature,
+        ethers.utils.recoverAddress(
+          TypedDataUtils.encodeDigest(permissionMwPreData),
+          signatures.signatures.sig1.signature
+        )
+      );
+
+      // return 11;
+
       const collectEssenceData2 = await createEssenceTypedData({
         variables: {
           input: {
@@ -465,7 +295,10 @@ export const EventPage = () => {
             profileID: eventProfile.profileByHandle.profileID,
             essenceID:
               eventProfile?.profileByHandle?.essences?.edges[0].node.essenceID,
-            preData: signatures.signatures.sig1.signature,
+            preData: ethers.utils.defaultAbiCoder.encode(
+              ["uint8", "bytes32", "bytes32", "uint256"],
+              [splitSig.v, splitSig.r, splitSig.s, typedData.message.deadline]
+            ),
             // options: {
             //   overrideNonce: 0,
             // },
@@ -482,14 +315,12 @@ export const EventPage = () => {
         ]
       );
 
-      console.log(signatures);
-
       console.log(
-        ethers.utils.recoverAddress(
-          modifiedTypedData,
-          signatures.signatures.sig1.signature
-        )
+        "SENDER SIG",
+        ethers.utils.splitSignature(connectedWalletSignature)
       );
+
+      console.log("LIT SIG", signatures);
 
       // return 1;
 
@@ -515,7 +346,7 @@ export const EventPage = () => {
       setIsProcessing(false);
       setIsSuccess(true);
     } catch (e) {
-      alert("smth went wrong");
+      alert("Unable to participate: " + (e?.message || "weird error"));
 
       setIsProcessing(false);
 
@@ -622,6 +453,30 @@ export const EventPage = () => {
           Participate
         </Button>
       </Flex>
+      {isSuccess && (
+        <Alert
+          status="success"
+          variant="subtle"
+          pos={"fixed"}
+          top="2rem"
+          left="50%"
+          width={"50vw"}
+          transform={"translateX(-50%)"}
+          zIndex="overlay"
+        >
+          <AlertIcon />
+          All done! &nbsp;
+          <Flex align={"center"}>
+            Find your event pass&nbsp;
+            <Link href={openseaLink} target="_blank">
+              <Flex align={"center"} gap=".5rem">
+                <Text textDecor="underline"> here</Text>
+                <ExternalLinkIcon></ExternalLinkIcon>
+              </Flex>
+            </Link>
+          </Flex>
+        </Alert>
+      )}
     </Flex>
   ) : (
     <Spinner mt="20vh" />

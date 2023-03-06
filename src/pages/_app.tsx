@@ -3,8 +3,8 @@ import { ChakraProvider, Flex } from "@chakra-ui/react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
+import { DEFAULT_CHAIN } from "src/consts";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { bscTestnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { apolloClient } from "../api/cyberConnect/client";
 import Nav from "../components/Nav";
@@ -15,7 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const { chains, provider } = configureChains(
     [
       {
-        ...bscTestnet,
+        ...DEFAULT_CHAIN,
       },
     ],
     [publicProvider()]

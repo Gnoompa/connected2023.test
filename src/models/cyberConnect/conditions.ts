@@ -11,7 +11,7 @@ export const useConditions = () => {
           id: "hasProfile",
           label: "Has profile",
           subtitle: "(on-chain)",
-          getLabel: () => `Has profile`,
+          getLabel: () => `Has CCProfile`,
           conditionCode: () => `
             const testResult = await Lit.Actions.checkConditions({conditions: [
               {

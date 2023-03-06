@@ -35,7 +35,7 @@ export const useLogin = () => {
     isLoggingIn &&
       connectedWalletAddress &&
       hasAccessToken() &&
-      (setIsLoggingIn(false), console.log(222),loginCb?.());
+      (setIsLoggingIn(false), console.log(222), loginCb?.());
   }, [isLoggingIn, connectedWalletAddress]);
 
   const signLoginMessage = async () => {
@@ -63,7 +63,7 @@ export const useLogin = () => {
     });
 
     localStorage.setItem(
-      "accessToken",
+      "cyberConnectAccessToken",
       accessTokenResult?.data?.loginVerify?.accessToken
     );
 
@@ -71,7 +71,8 @@ export const useLogin = () => {
     loginCb?.();
   };
 
-  const hasAccessToken = () => !!localStorage.getItem("accessToken");
+  const hasAccessToken = () => false;
+  // !!localStorage.getItem("cyberConnectAccessToken");
 
   const mbLogin = (cb?: CallableFunction) =>
     new Promise((res) => {

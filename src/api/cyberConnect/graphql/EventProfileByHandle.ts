@@ -16,6 +16,7 @@ export const EVENT_PROFILE_BY_HANDLE = gql`
             id
             essenceID
             tokenURI
+            contractAddress
             collectMw {
               type
               data

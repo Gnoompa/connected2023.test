@@ -2,16 +2,15 @@ import { CheckIcon } from "@chakra-ui/icons";
 import { Button, Flex, Image, Input, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { DEFAULT_CHAIN } from "src/consts";
 import useEvent from "src/models/cyberConnect/event";
-import { useNetwork, useSignMessage } from "wagmi";
-import { bscTestnet } from "wagmi/chains";
+import { useNetwork } from "wagmi";
 import ConditionConstructor, {
   SelectedConditions
 } from "../components/ConditionConstructor";
 
 export default function Home() {
   const router = useRouter();
-  const { signMessageAsync } = useSignMessage();
   const { chain } = useNetwork();
   const [eventName, setEventName] = useState<string>();
   const [selectedConditions, setSelectedConditions] =
@@ -50,10 +49,10 @@ export default function Home() {
   }, [createdEventProfileHandle]);
 
   const onCreateEventButtonClick = async () => {
-    if (chain?.id == bscTestnet.id) {
+    if (chain?.id == DEFAULT_CHAIN.id) {
       createEvent();
     } else {
-      alert("Wrong network. Switch to bsc");
+      alert("Wrong network. Switch to " + DEFAULT_CHAIN.name);
     }
   };
 
@@ -77,14 +76,55 @@ export default function Home() {
           <Image src="/crossIcon.svg" />
           <Image src="/w3elogo.svg" width={"10rem"} />
         </Flex>
-        <Text
-          fontWeight={"semibold"}
-          bg="linear-gradient(90deg, rgba(187, 201, 255, 0.8) 0%, rgba(241, 142, 255, 0.8) 100%)"
-          bgClip={"text"}
-          mixBlendMode={"normal"}
-        >
-          decentralized on/off-chain event gating constructor
-        </Text>
+        <Flex flexDir={"column"} justify="center" align={"center"} gap=".75rem">
+          <Text
+            fontWeight={"semibold"}
+            bg="linear-gradient(90deg, rgba(187, 201, 255, 0.8) 0%, rgba(241, 142, 255, 0.8) 100%)"
+            bgClip={"text"}
+            fontSize="1.15rem"
+            mixBlendMode={"normal"}
+          >
+            decentralized on/off-chain event gating constructor
+          </Text>
+          <Flex gap=".5rem" align={"center"}>
+            <Text
+              fontSize={".9rem"}
+              fontWeight={"semibold"}
+              bg="linear-gradient(90deg, rgba(187, 201, 255, 0.8) 0%, rgba(241, 142, 255, 0.8) 100%)"
+              bgClip={"text"}
+              mixBlendMode={"normal"}
+            >
+              powered by
+            </Text>
+            <Text
+              fontSize={"1.25rem"}
+              fontWeight={"bold"}
+              bg="linear-gradient(90deg, rgb(254, 153, 0) 0%, rgba(255, 149, 0, 0.8) 100%)"
+              bgClip={"text"}
+              mixBlendMode={"normal"}
+            >
+              Lit
+            </Text>
+            <Text
+              fontSize={".9rem"}
+              fontWeight={"semibold"}
+              bg="linear-gradient(90deg, rgba(187, 201, 255, 0.8) 0%, rgba(241, 142, 255, 0.8) 100%)"
+              bgClip={"text"}
+              mixBlendMode={"normal"}
+            >
+              and
+            </Text>
+            <Text
+              fontSize={"1.25rem"}
+              fontWeight={"bold"}
+              bg="linear-gradient(90deg, rgb(255, 255, 255) 0%, rgba(225, 225, 225, 0.8) 100%)"
+              bgClip={"text"}
+              mixBlendMode={"normal"}
+            >
+              CyberConnect
+            </Text>
+          </Flex>
+        </Flex>
       </Flex>
       <Flex flexDirection={"column"} sx={{ gap: "4rem" }}>
         <Input

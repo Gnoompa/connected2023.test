@@ -1,18 +1,14 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WebBundlr } from "@bundlr-network/client";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CREATE_CREATE_PROFILE_TYPED_DATA } from "src/api/cyberConnect/graphql/CreateCreateProfileTypedData";
 import { CREATE_REGISTER_ESSENCE_TYPED_DATA } from "src/api/cyberConnect/graphql/CreateRegisterEssenceTypedData";
 import { EVENT_PROFILE_BY_HANDLE } from "src/api/cyberConnect/graphql/EventProfileByHandle";
-import { LOGIN_GET_MESSAGE } from "src/api/cyberConnect/graphql/LoginGetMessage";
-import { LOGIN_VERIFY } from "src/api/cyberConnect/graphql/LoginVerify";
 import { RELAY } from "src/api/cyberConnect/graphql/Relay";
 import { RELAY_ACTION_STATUS } from "src/api/cyberConnect/graphql/RelayActionStatus";
-import { VERIFY_ESSENCE_METADATA } from "src/api/cyberConnect/graphql/VerifyEssenceMetadata";
-import { useAccount, useProvider, useSigner, useSignMessage } from "wagmi";
+import { useAccount, useProvider, useSigner } from "wagmi";
+import useLogin from "./login";
 
 let profilePollingInterval;
 
@@ -23,27 +19,17 @@ export const useEvent = ({
   eventName: string | undefined;
   gatingConditions: object[];
 }) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error>();
   const [createdEventProfileHandle, setCreatedEventProfileHandle] =
     useState<string>();
   const { address: connectedWalletAddress } = useAccount();
   const { data: signer } = useSigner();
   const provider = useProvider();
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-  const { openConnectModal } = useConnectModal();
-  const [loginGetMessage] = useMutation(LOGIN_GET_MESSAGE);
-  const [loginVerify] = useMutation(LOGIN_VERIFY);
-  const [queryVerifyEssenceMetadata] = useLazyQuery(VERIFY_ESSENCE_METADATA);
+
   const [createEssenceTypedData] = useMutation(
     CREATE_REGISTER_ESSENCE_TYPED_DATA
   );
-  const [loginMessageToSign, setLoginMessageToSign] = useState<string>();
-  const { data: signedMessage, signMessage } = useSignMessage({
-    message: loginMessageToSign,
-  });
   const [getCreateEventProfileTypedData] = useMutation(
     CREATE_CREATE_PROFILE_TYPED_DATA
   );
@@ -51,67 +37,7 @@ export const useEvent = ({
   const [relay] = useMutation(RELAY);
   const [queryRelayStatus] = useLazyQuery(RELAY_ACTION_STATUS);
 
-  useEffect(() => {
-    isLoggingIn
-      ? signedMessage && verifyLogin(signedMessage)
-      : setLoginMessageToSign(undefined);
-  }, [isLoggingIn, signedMessage]);
-
-  useEffect(() => {
-    isLoggingIn &&
-      (!connectedWalletAddress && openConnectModal?.(),
-      !hasAccessToken() && connectedWalletAddress && login());
-  }, [isLoggingIn, connectedWalletAddress]);
-
-  useEffect(() => {
-    isLoggingIn &&
-      connectedWalletAddress &&
-      hasAccessToken() &&
-      (createEvent(), setIsLoggingIn(false));
-  }, [isLoggingIn, connectedWalletAddress, isCreatingEvent]);
-
-  const login = async () => {
-    const messageResult = await loginGetMessage({
-      variables: {
-        input: {
-          address: connectedWalletAddress,
-          domain: "verceltwitter.vercel.app",
-        },
-      },
-    });
-
-    signMessage({ message: messageResult?.data?.loginGetMessage?.message });
-  };
-
-  const verifyLogin = async (signedMessage: string) => {
-    const accessTokenResult = await loginVerify({
-      variables: {
-        input: {
-          address: connectedWalletAddress,
-          domain: "verceltwitter.vercel.app",
-          signature: signedMessage,
-        },
-      },
-    });
-
-    localStorage.setItem(
-      "accessToken",
-      accessTokenResult?.data?.loginVerify?.accessToken
-    );
-
-    setIsLoggingIn(false);
-
-    isCreatingEvent && createEvent();
-  };
-
-  const hasAccessToken = () => !!localStorage.getItem("accessToken");
-
-  const mbLogin = () =>
-    new Promise((res) => {
-      !connectedWalletAddress || !hasAccessToken()
-        ? setIsLoggingIn(true)
-        : res(null);
-    });
+  const { mbLogin } = useLogin();
 
   const createEventProfile = async () => {
     const profileHandle = "web3events" + `${+Date.now()}`.substring(4);
@@ -121,7 +47,7 @@ export const useEvent = ({
         variables: {
           input: {
             avatar:
-              "https://ipfs.io/ipfs/bafybeidslprdmrckh73cx5qre2kirr7e7dcij6jqpiae52dit6qcfg6cfy",
+              "https://storage.fleek.zone/11bba0e3-a1bd-4894-a62d-0659871bbb90-bucket/connected2023_2.png",
             handle: profileHandle,
             metadata: "",
             operator: ethers.constants.AddressZero,
@@ -169,7 +95,7 @@ export const useEvent = ({
       media: [],
       tags: [],
       image:
-        "https://ipfs.io/ipfs/bafybeidslprdmrckh73cx5qre2kirr7e7dcij6jqpiae52dit6qcfg6cfy",
+        "https://storage.fleek.zone/11bba0e3-a1bd-4894-a62d-0659871bbb90-bucket/connected2023_2.png",
       image_data: "",
       name: eventName || "Connected2023 & Web3Events",
       description: `decentralized on/off-chain event gating constructor`,
@@ -286,7 +212,7 @@ export const useEvent = ({
   const createEvent = () => {
     setIsCreatingEvent(true);
 
-    mbLogin().then(createEventProfile);
+    mbLogin(createEventProfile).then(createEventProfile);
   };
 
   return {

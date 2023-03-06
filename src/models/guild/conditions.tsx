@@ -35,7 +35,7 @@ export const useConditions = () => {
             )}.map(option => !!guilds.filter(({guildId}) => guildId == option.value).length).includes(false)) { return LitActions.setResponse({response: "Guild.xyz membership is not satisfied"}) }
           `,
           getLabel: (options) =>
-            `Member of ${options?.map(({ label }) => label).join(", ")}`,
+            `Guild.xyz member of ${options?.map(({ label }) => label).join(", ")}`,
         },
       ],
     }),

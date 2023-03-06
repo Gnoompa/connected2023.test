@@ -18,6 +18,9 @@ export const Nav = () => (
     >
       🎉 NFT campaign
     </Link> */}
+    <Link sx={{ textDecoration: "underline" }} fontWeight={"light"} href="/">
+      home
+    </Link>
     <Link
       sx={{ textDecoration: "underline" }}
       fontWeight={"light"}
@@ -25,7 +28,7 @@ export const Nav = () => (
       target="_blank"
     >
       about
-      <ExternalLinkIcon ml=".5rem"/>
+      <ExternalLinkIcon ml=".5rem" />
     </Link>
     <ConnectButton />
   </Flex>
