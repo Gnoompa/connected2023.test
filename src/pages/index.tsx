@@ -114,6 +114,7 @@ export default function Home() {
             <Flex gap="1rem" maxW={"35rem"} wrap="wrap">
               {selectedConditionsList.map((condition) => (
                 <Flex
+                  boxShadow={"0 5px 10px #222"}
                   bg={`${condition.conditionConfig.type}Bg`}
                   color={`${condition.conditionConfig.type}Color`}
                   fontWeight={"semibold"}

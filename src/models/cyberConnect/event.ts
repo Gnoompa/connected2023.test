@@ -231,7 +231,11 @@ export const useEvent = ({
       },
     });
 
-    await waitForRelay(relayResponse?.data?.relay?.relayActionId);
+    const relayStatus = await waitForRelay(
+      relayResponse?.data?.relay?.relayActionId
+    );
+
+    !relayStatus && alert("Smth went wrong");
 
     setIsCreatingEvent(false);
 
@@ -246,11 +250,13 @@ export const useEvent = ({
             queryRelayStatus({
               fetchPolicy: "network-only",
               variables: { relayActionId },
-            }).then(
-              ({ data }) =>
-                data?.relayActionStatus?.txStatus === "SUCCESS" &&
-                (res(null), clearInterval(profilePollingInterval))
-            ),
+            }).then(({ data }) => {
+              data?.relayActionStatus?.txStatus === "SUCCESS" &&
+                (res(true), clearInterval(profilePollingInterval));
+
+              data?.relayActionStatus?.__typename == "RelayActionError" &&
+                (res(false), clearInterval(profilePollingInterval));
+            }),
           1000
         );
       }, 1500)
