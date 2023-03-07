@@ -1,4 +1,3 @@
-import * as chain from "@wagmi/core/chains";
 import { useMemo } from "react";
 import { CONDITION_TYPE } from "../conditions/types";
 
@@ -11,19 +10,25 @@ export const useConditions = () => {
         {
           label: "Has profile",
           subtitle: "(on-chain)",
-          access: [
-            {
-              contractAddress: "0x2723522702093601e6360cae665518c4f63e9da6",
-              standardContractType: "ERC721",
-              chain: chain.mainnet.id,
-              method: "balanceOf",
-              parameters: [":userAddress"],
-              returnValueTest: {
-                comparator: ">",
-                value: "0",
+          getLabel: () => `Has profile`,
+          conditionCode: () => `
+            const testResult = await Lit.Actions.checkConditions({conditions: [
+              {
+                  contractAddress: "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d",
+                  standardContractType: "ERC721",
+                  chain: "polygon",
+                  method: "balanceOf",
+                  parameters: [":userAddress"],
+                  returnValueTest: {
+                    comparator: ">",
+                    value: "0",
+                  },
+
               },
-            },
-          ],
+            ], authSig, chain: "polygon"})
+
+            if (!testResult) { return LitActions.setResponse({response: "Lens profile ownership is not satisfied"}) }
+          `,
         },
       ],
     }),

@@ -26,7 +26,6 @@ import { without } from "lodash";
 import { useEffect, useState } from "react";
 import { CONDITION_TYPE, ICondition } from "src/models/conditions/types";
 import { useConditions as useCyberConnectConditions } from "src/models/cyberConnect/conditions";
-import { useConditions as useDegenscoreConditions } from "src/models/degenScore/conditions";
 import { useConditions as useGuildConditions } from "src/models/guild/conditions";
 import { useConditions as useLensConditions } from "src/models/lens/conditions";
 
@@ -49,7 +48,7 @@ export const ConditionConstructor = ({
 }) => {
   const { conditions: guildConditionConfig } = useGuildConditions();
   const { conditions: lensConditionConfig } = useLensConditions();
-  const { conditions: degenscoreConditionConfig } = useDegenscoreConditions();
+  // const { conditions: degenscoreConditionConfig } = useDegenscoreConditions();
   const { conditions: cyberConnectConditionConfig } =
     useCyberConnectConditions();
   const [conditionConfigs, setConditionConfigs] = useState<ICondition[]>([]);
@@ -63,14 +62,14 @@ export const ConditionConstructor = ({
     setConditionConfigs([
       cyberConnectConditionConfig,
       lensConditionConfig,
-      degenscoreConditionConfig,
+      // degenscoreConditionConfig,
       guildConditionConfig,
     ]);
   }, [
     cyberConnectConditionConfig,
     guildConditionConfig,
     lensConditionConfig,
-    degenscoreConditionConfig,
+    // degenscoreConditionConfig,
   ]);
 
   useEffect(() => {
@@ -147,11 +146,11 @@ export const ConditionConstructor = ({
             </Flex>
           </MenuButton>
           <Portal>
-            <MenuList gap={"0rem"}>
+            <MenuList gap={"0rem"} ml={["-12rem", "0"]}>
               {conditionConfigs.map((conditionConfig, conditionConfigIndex) => (
                 <MenuItem key={conditionConfigIndex}>
                   <Menu placement="right" closeOnSelect={false}>
-                    {({ onClose }) => (
+                    {({ onClose, isOpen }) => (
                       <>
                         <MenuButton
                           bg={`${conditionConfig.type}Bg`}
@@ -159,7 +158,9 @@ export const ConditionConstructor = ({
                           fontWeight={"semibold"}
                           p=".75rem 1.25rem"
                           borderRadius={"md"}
-                          w="14rem"
+                          w={[isOpen ? "5.75rem" : "14rem", "14rem"]}
+                          overflow="hidden"
+                          boxShadow={"0 5px 10px #222"}
                         >
                           <Flex
                             justifyContent="space-between"
@@ -170,7 +171,11 @@ export const ConditionConstructor = ({
                                 src={`/${conditionConfig.type}.svg`}
                                 w="1.25rem"
                               />
-                              {conditionConfig.label}
+                              <Text
+                                display={[isOpen ? "none" : "flex", "flex"]}
+                              >
+                                {conditionConfig.label}
+                              </Text>
                             </Flex>
                             <ChevronRightIcon
                               color={`${conditionConfig.type}Color`}
@@ -186,6 +191,7 @@ export const ConditionConstructor = ({
                                 fontWeight={"semibold"}
                                 p=".75rem 1.25rem"
                                 borderRadius={"md"}
+                                boxShadow={"0 5px 10px #222"}
                                 onClick={() =>
                                   condition.options
                                     ? toggleConditionOptions(condition)

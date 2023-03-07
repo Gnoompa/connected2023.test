@@ -27,6 +27,7 @@ import { useAccount, useContractRead, useSigner } from "wagmi";
 import ABI from "../../models/cyberConnect/abi";
 
 let profilePollingInterval;
+let initialProfilePollingInterval;
 
 export const EventPage = () => {
   const router = useRouter();
@@ -37,6 +38,8 @@ export const EventPage = () => {
   const [queryEventProfileByHandle, { data: eventProfile }] = useLazyQuery(
     EVENT_PROFILE_BY_HANDLE
   );
+  const isEventProfileAbsent =
+    eventProfile && !eventProfile?.profileByHandle?.essences?.edges?.length;
   const eventGatingToken =
     eventProfile?.profileByHandle?.essences?.edges?.[0]?.node;
   const [eventGatingTokenMetadata, setEventGatingTokenMetadata] =
@@ -65,8 +68,6 @@ export const EventPage = () => {
     args: ["0x29C25240C364bD9cae5F5FE30EF8591971cE09Ec"],
   });
 
-  console.log(profileEssence)
-
   useEffect(() => {
     eventProfileHandle && fetchEventProfile(eventProfileHandle as string);
   }, [eventProfileHandle]);
@@ -84,15 +85,6 @@ export const EventPage = () => {
     eventGatingTokenMetadata && fetchEventGatingTokenConditions();
   }, [eventGatingTokenMetadata]);
 
-  useEffect(() => {
-    eventProfile &&
-      !eventProfile?.profileByHandle?.essences?.edges?.length &&
-      queryEventProfileByHandle({
-        variables: { handle: eventProfileHandle },
-        fetchPolicy: "network-only",
-      });
-  }, [eventProfile]);
-
   const fetchEventGatingTokenMetadata = (uri: string) => {
     fetch(uri)
       .then((response) => response.json())
@@ -106,7 +98,10 @@ export const EventPage = () => {
   };
 
   const fetchEventProfile = (eventProfileHandle: string) =>
-    queryEventProfileByHandle({ variables: { handle: eventProfileHandle } });
+    queryEventProfileByHandle({
+      variables: { handle: eventProfileHandle },
+      fetchPolicy: "network-only",
+    });
 
   const participate = async () => {
     try {
@@ -344,6 +339,9 @@ export const EventPage = () => {
       }
 
       setIsProcessing(false);
+
+      await fetchEventProfile(eventProfileHandle as string);
+
       setIsSuccess(true);
     } catch (e) {
       alert("Unable to participate: " + (e?.message || "weird error"));
@@ -379,11 +377,16 @@ export const EventPage = () => {
     );
 
   return eventGatingTokenMetadata ? (
-    <Flex gap="4rem" mt="10vh">
+    <Flex
+      flexDir={["column", "column", "row"]}
+      gap={["2rem", "4rem"]}
+      mt="10vh"
+      align={"center"}
+    >
       <Flex pos={"relative"}>
         <Image
           zIndex={1}
-          src="https://storage.fleek.zone/11bba0e3-a1bd-4894-a62d-0659871bbb90-bucket/connected2023_2.png"
+          src="https://ipfs.io/ipfs/bafybeidslprdmrckh73cx5qre2kirr7e7dcij6jqpiae52dit6qcfg6cfy"
           fallback={
             <Flex w="20rem" h="20rem" align={"center"} justify="center">
               <Spinner />
@@ -396,7 +399,7 @@ export const EventPage = () => {
         <Box pos={"absolute"} w="25rem">
           <Image
             pos={"absolute"}
-            src="https://storage.fleek.zone/11bba0e3-a1bd-4894-a62d-0659871bbb90-bucket/connected2023_2.png"
+            src="https://ipfs.io/ipfs/bafybeidslprdmrckh73cx5qre2kirr7e7dcij6jqpiae52dit6qcfg6cfy"
             w="23rem"
             fallback={<></>}
             top={"-1.5rem"}
@@ -413,8 +416,15 @@ export const EventPage = () => {
         flexDir={"column"}
         align="flex-start"
         justify="flex-start"
+        maxW={"calc(100% - 2rem)"}
+        pb="4rem"
       >
-        <Text fontSize={"2xl"} fontWeight="bold">
+        <Text
+          w="100%"
+          fontSize={"2xl"}
+          fontWeight="bold"
+          textAlign={["center", "initial"]}
+        >
           {eventGatingTokenMetadata.name}
         </Text>
         {eventGatingTokenConditions && (
@@ -435,9 +445,7 @@ export const EventPage = () => {
                     borderRadius={"md"}
                   >
                     <Image src={`/${condition.configId}.svg`} w="1.25rem" />
-                    <Text whiteSpace={"nowrap"}>
-                      {condition.conditionLabel}
-                    </Text>
+                    <Text>{condition.conditionLabel}</Text>
                   </Flex>
                 ))}
               </Flex>
@@ -445,6 +453,7 @@ export const EventPage = () => {
           </Flex>
         )}
         <Button
+          alignSelf={["center", "flex-start"]}
           isLoading={isProcessing}
           disabled={!eventGatingToken || !eventGatingTokenMetadata}
           onClick={onParticipateButtonClick}
@@ -467,7 +476,7 @@ export const EventPage = () => {
           <AlertIcon />
           All done! &nbsp;
           <Flex align={"center"}>
-            Find your event pass&nbsp;
+            NFT will shortly show&nbsp;
             <Link href={openseaLink} target="_blank">
               <Flex align={"center"} gap=".5rem">
                 <Text textDecor="underline"> here</Text>
@@ -478,6 +487,10 @@ export const EventPage = () => {
         </Alert>
       )}
     </Flex>
+  ) : isEventProfileAbsent ? (
+    <Text mt="10rem" fontSize={"1.25rem"} fontWeight="semibold">
+      No such event
+    </Text>
   ) : (
     <Spinner mt="20vh" />
   );

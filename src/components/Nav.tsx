@@ -7,7 +7,7 @@ export const Nav = () => (
     width={"100%"}
     justifyContent={"flex-end"}
     alignItems={"center"}
-    sx={{ gap: "3rem" }}
+    gap={["1.5rem", "3rem"]}
     p={"1rem 2rem"}
   >
     {/* <Link
@@ -22,6 +22,7 @@ export const Nav = () => (
       home
     </Link>
     <Link
+    whiteSpace={"nowrap"}
       sx={{ textDecoration: "underline" }}
       fontWeight={"light"}
       href="/about"

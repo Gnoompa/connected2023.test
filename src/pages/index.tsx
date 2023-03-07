@@ -58,16 +58,22 @@ export default function Home() {
 
   return (
     <Flex
+      pb="4rem"
       flexDirection={"column"}
       width={"50rem"}
+      maxW={"calc(100% - 2rem)"}
       margin={"4rem auto"}
       alignItems={"center"}
-      sx={{ gap: "8rem" }}
+      gap={["4rem", "8rem"]}
     >
       <Flex flexDirection={"column"} sx={{ gap: "2rem" }} alignItems={"center"}>
-        <Flex sx={{ gap: "2rem" }} alignItems={"center"}>
+        <Flex
+          flexDirection={["column", "row"]}
+          gap={["1rem", "2rem"]}
+          alignItems={"center"}
+        >
           <Text
-            fontSize={"3rem"}
+            fontSize={["1.5rem", "3rem"]}
             fontWeight={"bold"}
             sx={{ whiteSpace: "nowrap" }}
           >
@@ -83,8 +89,9 @@ export default function Home() {
             bgClip={"text"}
             fontSize="1.15rem"
             mixBlendMode={"normal"}
+            textAlign="center"
           >
-            decentralized on/off-chain event gating constructor
+            decentralized on/off-chain gating constructor
           </Text>
           <Flex gap=".5rem" align={"center"}>
             <Text
@@ -126,7 +133,7 @@ export default function Home() {
           </Flex>
         </Flex>
       </Flex>
-      <Flex flexDirection={"column"} sx={{ gap: "4rem" }}>
+      <Flex w={["100%", "70%"]} flexDirection={"column"} gap={"4rem"}>
         <Input
           value={eventName}
           onChange={(e) => setEventName(e.target.value)}
@@ -134,7 +141,7 @@ export default function Home() {
           size="lg"
           placeholder="Event name"
           textAlign={"center"}
-          w={"40rem"}
+          w={"100%"}
         ></Input>
         <Flex
           flexDirection={"column"}
@@ -166,7 +173,7 @@ export default function Home() {
                     src={`/${condition.conditionConfig.type}.svg`}
                     w="1.25rem"
                   />
-                  <Text whiteSpace={"nowrap"}>
+                  <Text>
                     {condition?.originCondition?.getLabel?.(condition?.options)}
                   </Text>
                 </Flex>
