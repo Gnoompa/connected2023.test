@@ -1,6 +1,6 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { IS_TEST_ENV } from "src/consts";
+import { CYBERCONNECT_KEY, IS_TEST_ENV } from "src/consts";
 
 const httpLink = createHttpLink({
   uri: IS_TEST_ENV
@@ -15,10 +15,7 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       Authorization: token ? `bearer ${token}` : "",
-      "X-API-KEY": IS_TEST_ENV
-        ? "l4fUvdyV1Vyb777TbLNtcGe7sl4aSlrZ"
-        : "FkgQOpScPAK1AVBpnZBowugCjNKtlNqN",
-        // : "LGziMAjTtQK9vuKD3IZxfrJCznBQPZE0"
+      "X-API-KEY": CYBERCONNECT_KEY,
     },
   };
 });

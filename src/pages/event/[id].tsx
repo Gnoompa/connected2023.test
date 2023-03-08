@@ -1,5 +1,10 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { ArrowForwardIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import {
+  ArrowForwardIcon,
+  CheckIcon,
+  CopyIcon,
+  ExternalLinkIcon
+} from "@chakra-ui/icons";
 import {
   Alert,
   AlertIcon,
@@ -8,7 +13,8 @@ import {
   Flex,
   Image,
   Spinner,
-  Text
+  Text,
+  useClipboard
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import LitJsSdk from "lit-js-sdk";
@@ -31,13 +37,19 @@ let initialProfilePollingInterval;
 
 export const EventPage = () => {
   const router = useRouter();
-  const { data: signer } = useSigner();
+  const { data: signer } = useSigner({chainId: DEFAULT_CHAIN.id});
   const { address: connectedWalletAddress } = useAccount();
   const { id: eventProfileHandle } = router.query;
   const { mbLogin } = useLogin();
   const [queryEventProfileByHandle, { data: eventProfile }] = useLazyQuery(
     EVENT_PROFILE_BY_HANDLE
   );
+  const {
+    onCopy,
+    value: copyValue,
+    setValue: setCopyValue,
+    hasCopied,
+  } = useClipboard("");
   const isEventProfileAbsent =
     eventProfile && !eventProfile?.profileByHandle?.essences?.edges?.length;
   const eventGatingToken =
@@ -73,6 +85,10 @@ export const EventPage = () => {
   }, [eventProfileHandle]);
 
   useEffect(() => {
+    copyValue && onCopy();
+  }, [copyValue]);
+
+  useEffect(() => {
     isSuccess && setTimeout(() => setIsSuccess(false), 7000);
   }, [isSuccess]);
 
@@ -90,6 +106,8 @@ export const EventPage = () => {
       .then((response) => response.json())
       .then(setEventGatingTokenMetadata);
   };
+
+  console.log(signer)
 
   const fetchEventGatingTokenConditions = () => {
     fetch("https://arweave.net/" + eventGatingTokenMetadata.attributes[0].value)
@@ -301,6 +319,8 @@ export const EventPage = () => {
         },
       });
 
+      console.log(signer)
+
       const connectedWalletSignature = await signer?.provider?.send(
         "eth_signTypedData_v4",
         [
@@ -312,6 +332,7 @@ export const EventPage = () => {
 
       console.log(
         "SENDER SIG",
+        connectedWalletSignature,
         ethers.utils.splitSignature(connectedWalletSignature)
       );
 
@@ -419,16 +440,31 @@ export const EventPage = () => {
         maxW={"calc(100% - 2rem)"}
         pb="4rem"
       >
-        <Text
-          w="100%"
-          fontSize={"2xl"}
-          fontWeight="bold"
-          textAlign={["center", "initial"]}
-        >
-          {eventGatingTokenMetadata.name}
-        </Text>
+        <Flex flexDir={"column"} gap=".25rem">
+          <Text
+            w="100%"
+            fontSize={"2xl"}
+            fontWeight="bold"
+            textAlign={["center", "initial"]}
+          >
+            {eventGatingTokenMetadata.name}
+          </Text>
+          <Flex
+            gap=".5rem"
+            align={"center"}
+            cursor={"pointer"}
+            onClick={() => setCopyValue(profileEssence?.contractAddress)}
+            alignSelf="flex-start"
+          >
+            <Text fontSize={[".65rem", ".9rem"]} opacity={0.8}>
+              {profileEssence?.contractAddress}
+            </Text>
+            <CopyIcon />
+            <CheckIcon opacity={+!!hasCopied} />
+          </Flex>
+        </Flex>
         {eventGatingTokenConditions && (
-          <Flex gap="1rem" flexDir={"column"}>
+          <Flex gap=".5rem" flexDir={"column"}>
             <Text fontWeight={"semibold"} opacity={0.9}>
               Gating conditions
             </Text>
@@ -480,7 +516,7 @@ export const EventPage = () => {
             <Link href={openseaLink} target="_blank">
               <Flex align={"center"} gap=".5rem">
                 <Text textDecor="underline"> here</Text>
-                <ExternalLinkIcon></ExternalLinkIcon>
+                <ExternalLinkIcon />
               </Flex>
             </Link>
           </Flex>

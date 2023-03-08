@@ -27,6 +27,17 @@ export default function Home() {
     gatingConditions: selectedConditionsList,
   });
 
+  // useEffect(() => {
+  //   fetch("https://api.cyberconnect.dev/ladon/", {
+  //     body: `{query:"query {projectByApiKey(apiKey: "${CYBERCONNECT_KEY}") { balance }}", variables:{}}`,
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json",
+  //     },
+  //     method: "POST",
+  //   });
+  // }, []);
+
   useEffect(() => {
     selectedConditions &&
       setSelectedConditionsList(
@@ -190,6 +201,11 @@ export default function Home() {
         >
           Create event
         </Button>
+        <Text></Text>
+        {/* <Flex>
+          <Text>if stuck for a long time already switch to</Text>
+          <Link>testnet example</Link>
+        </Flex> */}
       </Flex>
     </Flex>
   );

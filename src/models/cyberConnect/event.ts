@@ -131,6 +131,7 @@ export const useEvent = ({
               signer: "0x29C25240C364bD9cae5F5FE30EF8591971cE09Ec", // PKP NFT address
             },
           },
+          deployAtRegister: true,
           name: "Connected2033 & Web3Events - Gated event",
           profileID: eventProfile.data.profileByHandle.profileID,
           symbol: "W3E",
