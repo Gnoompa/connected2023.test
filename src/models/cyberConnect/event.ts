@@ -164,9 +164,11 @@ export const useEvent = ({
 
     !relayStatus && alert("Smth went wrong");
 
-    setIsCreatingEvent(false);
+    setTimeout(() => {
+      setIsCreatingEvent(false);
 
-    setCreatedEventProfileHandle(profileHandle);
+      setCreatedEventProfileHandle(profileHandle);
+    }, 2000);
   };
 
   const waitForRelay = (relayActionId: string) =>
