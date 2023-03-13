@@ -1,5 +1,5 @@
-import { CheckIcon } from "@chakra-ui/icons";
-import { Button, Flex, Image, Input, Text } from "@chakra-ui/react";
+import { CheckIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { Button, Flex, Image, Input, Link, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { DEFAULT_CHAIN } from "src/consts";
@@ -201,11 +201,17 @@ export default function Home() {
         >
           Create event
         </Button>
-        <Text></Text>
-        {/* <Flex>
-          <Text>if stuck for a long time already switch to</Text>
-          <Link>testnet example</Link>
-        </Flex> */}
+        <Link
+          target={"_blank"}
+          href={"https://connected2023.test.vercel.app/"}
+          fontSize={".9rem"}
+          opacity={0.8}
+          textAlign={"center"}
+          mt="-3rem"
+        >
+          if stuck try testnet example
+          <ExternalLinkIcon ml=".5rem"></ExternalLinkIcon>
+        </Link>
       </Flex>
     </Flex>
   );

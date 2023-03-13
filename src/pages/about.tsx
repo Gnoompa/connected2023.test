@@ -1,12 +1,14 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-    Flex,
-    Image,
-    Tab,
-    TabList,
-    TabPanel,
-    TabPanels,
-    Tabs,
-    Text
+  Flex,
+  Image,
+  Link,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text
 } from "@chakra-ui/react";
 
 export const AboutPage = () => {
@@ -18,8 +20,97 @@ export const AboutPage = () => {
           <Tab>Technical</Tab>
         </TabList>
         <TabPanels pb="4rem">
-          <TabPanel pt="4rem" ml="10rem">
-            <Flex ml="-10rem" w={"22rem"} pos={"relative"}>
+          <TabPanel
+            display={"flex"}
+            flexDir="column"
+            gap="6rem"
+            alignItems={"center"}
+            justifyContent="center"
+          >
+            <Flex
+              flexDir={"column"}
+              gap="2rem"
+              w={"55rem"}
+              maxW={"calc(100vw - 2rem)"}
+              align="center"
+            >
+              <Text fontWeight={"semibold"} fontSize="2rem">
+                Usecases
+              </Text>
+              <Flex
+                gap={"2rem"}
+                wrap="wrap"
+                // alignItems={"center"}
+                justify="center"
+              >
+                <Flex gap="2rem">
+                  <Flex
+                    w={"25rem"}
+                    p="1rem 2rem"
+                    flexDir={"column"}
+                    gap="1rem"
+                    bg="#222"
+                    borderRadius={"lg"}
+                    border="solid 1px #ffffff29"
+                    maxW={"calc(100vw - 2rem)"}
+                  >
+                    <Link target={"_blank"} href="https://web3events.ai/">
+                      <Flex align={"center"} gap="1rem">
+                        <Image w="6rem" src="/w3elogo.svg"></Image>
+                        <ExternalLinkIcon></ExternalLinkIcon>
+                      </Flex>
+                    </Link>
+                    <Text lineHeight={"1.25rem"}>
+                      Gated events, campaign condition checker and many more
+                      features coming!
+                    </Text>
+                  </Flex>
+                </Flex>
+                <Flex gap="2rem">
+                  <Flex
+                    w={"25rem"}
+                    p="1rem 2rem"
+                    flexDir={"column"}
+                    gap="1rem"
+                    bg=" linear-gradient(87.16deg, #111111 0%, rgba(17, 17, 17, 0.53) 97.64%);"
+                    borderRadius={"lg"}
+                    border="solid 1px #ffffff29"
+                    maxW={"calc(100vw - 2rem)"}
+                  >
+                    <Image w="6rem" src="/huddle.svg"></Image>
+                    <Text lineHeight={"1.25rem"}>
+                      Access restriction for video conferences
+                    </Text>
+                  </Flex>
+                </Flex>
+                <Flex gap="2rem">
+                  <Flex
+                    w={"25rem"}
+                    p="1rem 2rem"
+                    flexDir={"column"}
+                    gap="1rem"
+                    bg="linear-gradient(87.87deg, #D2E6FF 0%, rgba(255, 255, 255, 0.83) 98.19%);"
+                    borderRadius={"lg"}
+                    border="solid 1px #ffffff29"
+                    maxW={"calc(100vw - 2rem)"}
+                  >
+                    <Image w="8rem" src="/collabland.svg"></Image>
+                    <Text lineHeight={"1.25rem"} color="#222">
+                      Telegram and Discord access restriction
+                    </Text>
+                  </Flex>
+                </Flex>
+              </Flex>
+            </Flex>
+            <Text fontWeight={"semibold"} fontSize="2rem">
+              How it works
+            </Text>
+            <Flex
+              ml={[0, 0, "-20rem"]}
+              w={"22rem"}
+              maxW={"calc(100vw - 2rem)"}
+              pos={"relative"}
+            >
               <Flex
                 bg="#000000a8"
                 backdropFilter={"blur(20px)"}
@@ -31,8 +122,7 @@ export const AboutPage = () => {
                   fontWeight="semibold"
                   lineHeight="1.5rem"
                 >
-                  Event host sets up conditions of whoever is eligible for
-                  getting a ticket
+                  Set up conditions of whoever is eligible for a gating token
                 </Text>
               </Flex>
               <Image
@@ -44,7 +134,12 @@ export const AboutPage = () => {
                 zIndex={-1}
               />
             </Flex>
-            <Flex mt="4rem" ml="7rem" w={"22rem"} pos={"relative"}>
+            <Flex
+              ml={[0, 0, "17rem"]}
+              w={"22rem"}
+              maxW={"calc(100vw - 2rem)"}
+              pos={"relative"}
+            >
               <Flex
                 bg="#000000a8"
                 backdropFilter={"blur(20px)"}
@@ -56,7 +151,7 @@ export const AboutPage = () => {
                   fontWeight="semibold"
                   lineHeight="1.5rem"
                 >
-                  Participants visit event page and check for ticket eligibility
+                  Users check for eligibility to mint a gating token
                 </Text>
               </Flex>
               <Image
@@ -76,7 +171,12 @@ export const AboutPage = () => {
                 zIndex={-1}
               />
             </Flex>
-            <Flex mt="4rem" ml="-10rem" w={"22rem"} pos={"relative"}>
+            <Flex
+              ml={[0, 0, "-20rem"]}
+              maxW={"calc(100vw - 2rem)"}
+              w={"24rem"}
+              pos={"relative"}
+            >
               <Flex
                 bg="#000000a8"
                 backdropFilter={"blur(20px)"}
@@ -88,7 +188,8 @@ export const AboutPage = () => {
                   fontWeight="semibold"
                   lineHeight="1.5rem"
                 >
-                  If a participant is eligible they could get a ticket
+                  Users prove gating token ownership and access retricted
+                  service
                 </Text>
               </Flex>
 

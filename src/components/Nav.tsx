@@ -5,6 +5,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 export const Nav = () => (
   <Flex
     width={"100%"}
+    wrap="wrap"
     justifyContent={"flex-end"}
     alignItems={"center"}
     gap={["1.5rem", "3rem"]}
@@ -18,19 +19,31 @@ export const Nav = () => (
     >
       🎉 NFT campaign
     </Link> */}
-    <Link sx={{ textDecoration: "underline" }} fontWeight={"light"} href="/">
-      home
-    </Link>
-    <Link
-    whiteSpace={"nowrap"}
-      sx={{ textDecoration: "underline" }}
-      fontWeight={"light"}
-      href="/about"
-      target="_blank"
-    >
-      about
-      <ExternalLinkIcon ml=".5rem" />
-    </Link>
+    <Flex gap={["1.5rem", "3rem"]}>
+      <Link sx={{ textDecoration: "underline" }} fontWeight={"light"} href="/">
+        home
+      </Link>
+      <Link
+        whiteSpace={"nowrap"}
+        sx={{ textDecoration: "underline" }}
+        fontWeight={"light"}
+        href="https://web3events.ai/"
+        target="_blank"
+      >
+        web3events
+        <ExternalLinkIcon ml=".5rem" />
+      </Link>
+      <Link
+        whiteSpace={"nowrap"}
+        sx={{ textDecoration: "underline" }}
+        fontWeight={"light"}
+        href="/about"
+        target="_blank"
+      >
+        about
+        <ExternalLinkIcon ml=".5rem" />
+      </Link>
+    </Flex>
     <ConnectButton />
   </Flex>
 );
