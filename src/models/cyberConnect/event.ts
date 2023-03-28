@@ -132,7 +132,7 @@ export const useEvent = ({
             },
           },
           deployAtRegister: true,
-          name: "Connected2033 & Web3Events - Gated event",
+          name: "TEST COLLECTION",
           profileID: eventProfile.data.profileByHandle.profileID,
           symbol: "W3E",
           tokenURI: "https://arweave.net/" + arweaveTxId,
