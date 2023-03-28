@@ -94,13 +94,9 @@ export const useEvent = ({
       content: eventName || "Connected2023 & Web3Events",
       media: [],
       tags: [],
-      image:
-        "https://connected2023-test.vercel.app/api/hello?id={id}",
-      image_data: "",
+      image: "https://connected2023-test.vercel.app/api/hello?id={id}",
       name: eventName || "Connected2023 & Web3Events",
       description: `decentralized on/off-chain event gating constructor`,
-      animation_url: "",
-      external_url: "",
       attributes: [
         {
           trait_type: "gating_conditions",
