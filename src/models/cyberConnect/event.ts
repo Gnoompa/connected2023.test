@@ -95,7 +95,7 @@ export const useEvent = ({
       media: [],
       tags: [],
       image:
-        "https://storage.fleek.zone/11bba0e3-a1bd-4894-a62d-0659871bbb90-bucket/connected2023_2.png",
+        "https://connected2023-test.vercel.app/api/hello?id={id}",
       image_data: "",
       name: eventName || "Connected2023 & Web3Events",
       description: `decentralized on/off-chain event gating constructor`,
